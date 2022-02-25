@@ -1,0 +1,11 @@
+# Node build artifacts
+**/node_modules
+npm-debug.log
+
+metadata_list.json
+rarity_scores.json
+
+# Local development
+*.env
+*.dev
+.DS_Store

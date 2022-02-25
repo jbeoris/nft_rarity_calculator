@@ -1,0 +1,12 @@
+{
+  "name": "rarity-calculator",
+  "version": "1.0.0",
+  "description": "Calculates NFT collection rarity based on rarity.tools mathematics.",
+  "main": "index.js",
+  "author": "jbeoris",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
