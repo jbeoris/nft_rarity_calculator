@@ -1,5 +1,5 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { get, set } from 'lodash';
+const fs =  require('fs');
+const _ = require('lodash');
 
 const METADATA_LIST_PATH = 'metadata_list.json'
 
@@ -12,26 +12,29 @@ const METADATA_LIST_PATH = 'metadata_list.json'
  */
 
 function calculateRarity() {
-    const metadataList = JSON.parse(readFileSync(METADATA_LIST_PATH));
+    const metadataList = JSON.parse(fs.readFileSync(METADATA_LIST_PATH));
 
     let traitsAndValuesWithCounts = {};
     let itemsWithRarities = [];
 
     for (let { attributes } of metadataList) {
         for (let { trait_type, value } of attributes) {
-            let currentValue = get(traitsAndValuesWithCounts, `${trait_type}.${value}`, 0);
-            set(traitsAndValuesWithCounts, `${trait_type}.${value}`, currentValue + 1);
+            let currentValue = _.get(traitsAndValuesWithCounts, `${trait_type}.${value}`, 0);
+            _.set(traitsAndValuesWithCounts, `${trait_type}.${value}`, currentValue + 1);
         }
     }
 
     for (let item of metadataList) {
         let score = 0;
+        let attributesWithRarities = []
 
         for (let { trait_type, value } of item.attributes) {
+            const occurence = ((traitsAndValuesWithCounts[trait_type][value] / metadataList.length) * 100).toFixed(2) + '%';
             score += 1 / (traitsAndValuesWithCounts[trait_type][value] / metadataList.length);
+            attributesWithRarities.push({ trait_type, value, occurence });
         }
 
-        itemsWithRarities.push({ edition: item.edition, rarity_score: parseFloat(score.toFixed(2)) });
+        itemsWithRarities.push({ edition: item.edition, rarity_score: parseFloat(score.toFixed(2)), attributes: attributesWithRarities });
     }
 
     itemsWithRarities = itemsWithRarities.sort((a, b) => {
@@ -40,7 +43,7 @@ function calculateRarity() {
         else                                      return 0;
     })
 
-    writeFileSync(`rarity_scores.json`, JSON.stringify(itemsWithRarities, null, 4));
+    fs.writeFileSync(`rarity_scores.json`, JSON.stringify(itemsWithRarities, null, 4));
 }
 
 calculateRarity();
