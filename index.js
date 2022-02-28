@@ -42,6 +42,13 @@ function calculateRarity() {
         else if (b.rarity_score > a.rarity_score) return 1;
         else                                      return 0;
     })
+    
+    itemsWithRarities.forEach((item, index) => {
+        let attributes = _.cloneDeep(item.attributes);
+        delete item.attributes;
+        item.rank = index + 1;
+        item.attributes = attributes;
+    })
 
     fs.writeFileSync(`rarity_scores.json`, JSON.stringify(itemsWithRarities, null, 4));
 }
